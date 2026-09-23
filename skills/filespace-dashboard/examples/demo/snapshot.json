@@ -1,0 +1,553 @@
+{
+  "schema": "lucidlink-filespace-dashboard/1",
+  "generated_at": "2026-09-23T22:30:04Z",
+  "source": {
+    "mode": "mount",
+    "root": "/Volumes/studio/northwind-post",
+    "filespace": "northwind-post.studio"
+  },
+  "budget": "deep",
+  "window_days": 7,
+  "title": "northwind-post",
+  "stats": {
+    "entries": 124,
+    "files": 102,
+    "dirs": 22,
+    "data_bytes": 898176647168,
+    "storage_bytes": 556869521244,
+    "external_files": 3,
+    "external_bytes": 22548578304,
+    "stats_source": "provided (for example from the MCP filespace_stats tool)",
+    "provenance": {
+      "files": "tree walk",
+      "dirs": "tree walk",
+      "data_bytes": "hub (provided)",
+      "storage_bytes": "hub (provided)",
+      "external_files": "hub (provided)",
+      "external_bytes": "hub (provided)"
+    },
+    "walk_complete": true
+  },
+  "activity": {
+    "events": 749,
+    "by_day": [
+      {
+        "day": "2026-09-16",
+        "reads": 0,
+        "writes": 0,
+        "deletes": 0,
+        "other": 0
+      },
+      {
+        "day": "2026-09-17",
+        "reads": 49,
+        "writes": 32,
+        "deletes": 8,
+        "other": 0
+      },
+      {
+        "day": "2026-09-18",
+        "reads": 39,
+        "writes": 33,
+        "deletes": 9,
+        "other": 0
+      },
+      {
+        "day": "2026-09-19",
+        "reads": 51,
+        "writes": 33,
+        "deletes": 7,
+        "other": 0
+      },
+      {
+        "day": "2026-09-20",
+        "reads": 41,
+        "writes": 30,
+        "deletes": 8,
+        "other": 0
+      },
+      {
+        "day": "2026-09-21",
+        "reads": 55,
+        "writes": 34,
+        "deletes": 147,
+        "other": 0
+      },
+      {
+        "day": "2026-09-22",
+        "reads": 45,
+        "writes": 26,
+        "deletes": 6,
+        "other": 0
+      },
+      {
+        "day": "2026-09-23",
+        "reads": 60,
+        "writes": 29,
+        "deletes": 7,
+        "other": 0
+      }
+    ],
+    "by_action": {
+      "FileRead": 340,
+      "FileDelete": 192,
+      "FileCreate": 82,
+      "FileWritten": 82,
+      "Move": 53
+    },
+    "by_actor": [
+      {
+        "name": "alice@example.com",
+        "label": "alice@example.com",
+        "kind": "human",
+        "events": 258,
+        "reads": 158,
+        "writes": 75,
+        "deletes": 25,
+        "last_seen": "2026-09-23T18:58:07Z",
+        "hosts": [
+          "alice-mbp"
+        ]
+      },
+      {
+        "name": "ben@example.com",
+        "label": "ben@example.com",
+        "kind": "human",
+        "events": 185,
+        "reads": 76,
+        "writes": 82,
+        "deletes": 27,
+        "last_seen": "2026-09-23T18:34:29Z",
+        "hosts": [
+          "ben-studio"
+        ]
+      },
+      {
+        "name": "sa-archive-cleanup",
+        "label": "Archive cleanup",
+        "kind": "service",
+        "events": 140,
+        "reads": 0,
+        "writes": 0,
+        "deletes": 140,
+        "last_seen": "2026-09-21T13:22:52Z",
+        "hosts": [
+          "ops-runner"
+        ]
+      },
+      {
+        "name": "sa-render-farm",
+        "label": "Render farm",
+        "kind": "service",
+        "events": 90,
+        "reads": 30,
+        "writes": 60,
+        "deletes": 0,
+        "last_seen": "2026-09-23T02:14:06Z",
+        "hosts": [
+          "render-node-03"
+        ]
+      },
+      {
+        "name": "maya@example.com",
+        "label": "maya@example.com",
+        "kind": "human",
+        "events": 76,
+        "reads": 76,
+        "writes": 0,
+        "deletes": 0,
+        "last_seen": "2026-09-23T18:14:54Z",
+        "hosts": [
+          "maya-mbp"
+        ]
+      }
+    ],
+    "by_hour": [
+      20,
+      12,
+      17,
+      16,
+      17,
+      7,
+      1,
+      0,
+      0,
+      55,
+      48,
+      50,
+      73,
+      175,
+      42,
+      54,
+      56,
+      54,
+      51,
+      0,
+      0,
+      0,
+      1,
+      0
+    ]
+  },
+  "folders": [
+    {
+      "path": "/Shows",
+      "files": 44,
+      "bytes": 754332991488,
+      "reads": 340,
+      "writes": 217,
+      "deletes": 52,
+      "last_write": "2026-09-23T18:30:49Z",
+      "writers": [
+        "ben@example.com",
+        "alice@example.com",
+        "Render farm"
+      ]
+    },
+    {
+      "path": "/Archive",
+      "files": 40,
+      "bytes": 139586437120,
+      "reads": 0,
+      "writes": 0,
+      "deletes": 140,
+      "last_write": "2026-09-21T13:22:52Z",
+      "writers": [
+        "Archive cleanup"
+      ]
+    },
+    {
+      "path": "/Assets",
+      "files": 18,
+      "bytes": 4257218560,
+      "reads": 0,
+      "writes": 0,
+      "deletes": 0,
+      "last_write": null,
+      "writers": []
+    }
+  ],
+  "cold": {
+    "buckets": [
+      {
+        "label": "last 7 days",
+        "files": 4,
+        "bytes": 52105838592
+      },
+      {
+        "label": "7 to 30 days",
+        "files": 8,
+        "bytes": 154620919808
+      },
+      {
+        "label": "30 to 90 days",
+        "files": 29,
+        "bytes": 340237746176
+      },
+      {
+        "label": "90 days to 1 year",
+        "files": 15,
+        "bytes": 128947585024
+      },
+      {
+        "label": "1 to 2 years",
+        "files": 35,
+        "bytes": 185757335552
+      },
+      {
+        "label": "over 2 years",
+        "files": 11,
+        "bytes": 36507222016
+      }
+    ],
+    "candidates": [
+      {
+        "path": "/Shows/Quiet Season/Renders/quiet_ep01_v6.mov",
+        "bytes": 27917287424,
+        "mtime": "2026-02-26T22:30:04Z"
+      },
+      {
+        "path": "/Shows/Quiet Season/Footage/A001_C002.mxf",
+        "bytes": 22548578304,
+        "mtime": "2025-08-01T22:30:04Z"
+      },
+      {
+        "path": "/Shows/Quiet Season/Footage/A003_C006.mxf",
+        "bytes": 20401094656,
+        "mtime": "2025-08-01T22:30:04Z"
+      },
+      {
+        "path": "/Shows/Quiet Season/Renders/quiet_ep02_v9.mov",
+        "bytes": 16106127360,
+        "mtime": "2026-03-01T22:30:04Z"
+      },
+      {
+        "path": "/Shows/Quiet Season/Footage/A002_C006.mxf",
+        "bytes": 15032385536,
+        "mtime": "2025-07-28T22:30:04Z"
+      },
+      {
+        "path": "/Shows/Quiet Season/Footage/A005_C002.mxf",
+        "bytes": 12884901888,
+        "mtime": "2025-08-04T22:30:04Z"
+      },
+      {
+        "path": "/Shows/Quiet Season/Renders/quiet_ep03_v7.mov",
+        "bytes": 6442450944,
+        "mtime": "2026-02-28T22:30:04Z"
+      },
+      {
+        "path": "/Shows/Quiet Season/Footage/A004_C008.mxf",
+        "bytes": 6442450944,
+        "mtime": "2025-07-24T22:30:04Z"
+      },
+      {
+        "path": "/Archive/2024/sizzle_26.mp4",
+        "bytes": 6442450944,
+        "mtime": "2025-01-02T22:30:04Z"
+      },
+      {
+        "path": "/Archive/2024/promo_36.mp4",
+        "bytes": 6442450944,
+        "mtime": "2024-12-29T22:30:04Z"
+      }
+    ],
+    "candidate_rule": "files of at least 10 MB not modified for 180 days"
+  },
+  "extensions": [
+    {
+      "ext": ".mxf",
+      "files": 29,
+      "bytes": 452045307904
+    },
+    {
+      "ext": ".mov",
+      "files": 12,
+      "bytes": 301721452544
+    },
+    {
+      "ext": ".mp4",
+      "files": 40,
+      "bytes": 139586437120
+    },
+    {
+      "ext": ".wav",
+      "files": 6,
+      "bytes": 4183818240
+    },
+    {
+      "ext": ".prproj",
+      "files": 3,
+      "bytes": 566231040
+    },
+    {
+      "ext": ".png",
+      "files": 12,
+      "bytes": 73400320
+    }
+  ],
+  "largest": [
+    {
+      "path": "/Shows/Quiet Season/Deliverables/quiet_master_prores.mov",
+      "bytes": 51539607552
+    },
+    {
+      "path": "/Shows/Northwind S2/Deliverables/northwind_master_prores.mov",
+      "bytes": 51539607552
+    },
+    {
+      "path": "/Shows/Harbor Lights/Deliverables/harbor_master_prores.mov",
+      "bytes": 51539607552
+    },
+    {
+      "path": "/Shows/Quiet Season/Renders/quiet_ep01_v6.mov",
+      "bytes": 27917287424
+    },
+    {
+      "path": "/Shows/Northwind S2/Renders/northwind_ep01_v6.mov",
+      "bytes": 24696061952
+    },
+    {
+      "path": "/Shows/Northwind S2/Footage/A010_C001.mxf",
+      "bytes": 23622320128
+    },
+    {
+      "path": "/Shows/Northwind S2/Footage/A009_C004.mxf",
+      "bytes": 23622320128
+    },
+    {
+      "path": "/Shows/Northwind S2/Footage/A008_C001.mxf",
+      "bytes": 23622320128
+    },
+    {
+      "path": "/Shows/Harbor Lights/Footage/A001_C002.mxf",
+      "bytes": 23622320128
+    },
+    {
+      "path": "/Shows/Quiet Season/Footage/A001_C002.mxf",
+      "bytes": 22548578304
+    }
+  ],
+  "locks": null,
+  "recent": [
+    {
+      "ts": "2026-09-23T18:30:49Z",
+      "path": "/Shows/Harbor Lights/Project/harbor.prproj.bak",
+      "user": "ben@example.com",
+      "action": "FileDelete"
+    },
+    {
+      "ts": "2026-09-23T18:30:49Z",
+      "path": "/Shows/Harbor Lights/Project/harbor.prproj.tmp \u2192 /Shows/Harbor Lights/Project/harbor.prproj",
+      "user": "ben@example.com",
+      "action": "Move"
+    },
+    {
+      "ts": "2026-09-23T18:30:48Z",
+      "path": "/Shows/Harbor Lights/Project/harbor.prproj.tmp",
+      "user": "ben@example.com",
+      "action": "FileWritten"
+    },
+    {
+      "ts": "2026-09-23T18:30:47Z",
+      "path": "/Shows/Harbor Lights/Project/harbor.prproj.tmp",
+      "user": "ben@example.com",
+      "action": "FileCreate"
+    },
+    {
+      "ts": "2026-09-23T16:00:08Z",
+      "path": "/Shows/Harbor Lights/Project/harbor.prproj.bak",
+      "user": "alice@example.com",
+      "action": "FileDelete"
+    },
+    {
+      "ts": "2026-09-23T16:00:08Z",
+      "path": "/Shows/Harbor Lights/Project/harbor.prproj.tmp \u2192 /Shows/Harbor Lights/Project/harbor.prproj",
+      "user": "alice@example.com",
+      "action": "Move"
+    },
+    {
+      "ts": "2026-09-23T16:00:07Z",
+      "path": "/Shows/Harbor Lights/Project/harbor.prproj.tmp",
+      "user": "alice@example.com",
+      "action": "FileWritten"
+    },
+    {
+      "ts": "2026-09-23T16:00:06Z",
+      "path": "/Shows/Harbor Lights/Project/harbor.prproj.tmp",
+      "user": "alice@example.com",
+      "action": "FileCreate"
+    },
+    {
+      "ts": "2026-09-23T14:50:23Z",
+      "path": "/Shows/Quiet Season/Project/quiet.prproj.bak",
+      "user": "ben@example.com",
+      "action": "FileDelete"
+    },
+    {
+      "ts": "2026-09-23T14:50:23Z",
+      "path": "/Shows/Quiet Season/Project/quiet.prproj.tmp \u2192 /Shows/Quiet Season/Project/quiet.prproj",
+      "user": "ben@example.com",
+      "action": "Move"
+    },
+    {
+      "ts": "2026-09-23T14:50:22Z",
+      "path": "/Shows/Quiet Season/Project/quiet.prproj.tmp",
+      "user": "ben@example.com",
+      "action": "FileCreate, FileWritten"
+    },
+    {
+      "ts": "2026-09-23T13:48:28Z",
+      "path": "/Shows/Northwind S2/Project/northwind.prproj.bak",
+      "user": "ben@example.com",
+      "action": "FileDelete"
+    },
+    {
+      "ts": "2026-09-23T13:48:28Z",
+      "path": "/Shows/Northwind S2/Project/northwind.prproj.tmp \u2192 /Shows/Northwind S2/Project/northwind.prproj",
+      "user": "ben@example.com",
+      "action": "Move"
+    },
+    {
+      "ts": "2026-09-23T13:48:27Z",
+      "path": "/Shows/Northwind S2/Project/northwind.prproj.tmp",
+      "user": "ben@example.com",
+      "action": "FileCreate, FileWritten"
+    },
+    {
+      "ts": "2026-09-23T11:29:11Z",
+      "path": "/Shows/Quiet Season/Project/quiet.prproj.bak",
+      "user": "alice@example.com",
+      "action": "FileDelete"
+    },
+    {
+      "ts": "2026-09-23T11:29:11Z",
+      "path": "/Shows/Quiet Season/Project/quiet.prproj.tmp \u2192 /Shows/Quiet Season/Project/quiet.prproj",
+      "user": "alice@example.com",
+      "action": "Move"
+    },
+    {
+      "ts": "2026-09-23T11:29:11Z",
+      "path": "/Shows/Quiet Season/Project/quiet.prproj.tmp",
+      "user": "alice@example.com",
+      "action": "FileWritten"
+    },
+    {
+      "ts": "2026-09-23T11:29:10Z",
+      "path": "/Shows/Quiet Season/Project/quiet.prproj.tmp",
+      "user": "alice@example.com",
+      "action": "FileCreate"
+    },
+    {
+      "ts": "2026-09-23T10:13:59Z",
+      "path": "/Shows/Northwind S2/Project/northwind.prproj.bak",
+      "user": "ben@example.com",
+      "action": "FileDelete"
+    },
+    {
+      "ts": "2026-09-23T10:13:59Z",
+      "path": "/Shows/Northwind S2/Project/northwind.prproj.tmp \u2192 /Shows/Northwind S2/Project/northwind.prproj",
+      "user": "ben@example.com",
+      "action": "Move"
+    },
+    {
+      "ts": "2026-09-23T10:13:58Z",
+      "path": "/Shows/Northwind S2/Project/northwind.prproj.tmp",
+      "user": "ben@example.com",
+      "action": "FileCreate, FileWritten"
+    },
+    {
+      "ts": "2026-09-23T09:22:37Z",
+      "path": "/Shows/Northwind S2/Project/northwind.prproj.bak",
+      "user": "ben@example.com",
+      "action": "FileDelete"
+    },
+    {
+      "ts": "2026-09-23T09:22:37Z",
+      "path": "/Shows/Northwind S2/Project/northwind.prproj.tmp \u2192 /Shows/Northwind S2/Project/northwind.prproj",
+      "user": "ben@example.com",
+      "action": "Move"
+    },
+    {
+      "ts": "2026-09-23T09:22:36Z",
+      "path": "/Shows/Northwind S2/Project/northwind.prproj.tmp",
+      "user": "ben@example.com",
+      "action": "FileCreate, FileWritten"
+    },
+    {
+      "ts": "2026-09-23T02:14:06Z",
+      "path": "/Shows/Quiet Season/Renders/quiet_ep03_v9.mov",
+      "user": "Render farm",
+      "action": "FileWritten"
+    }
+  ],
+  "flags": [
+    {
+      "level": "warning",
+      "text": "Archive cleanup deleted 140 entries within one hour starting 2026-09-21 12:55Z."
+    }
+  ],
+  "notes": [
+    "Excluded /Dashboards/northwind-post (the dashboard's own folder) from counts."
+  ]
+}

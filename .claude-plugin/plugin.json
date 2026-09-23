@@ -1,0 +1,20 @@
+{
+  "name": "lucidlink",
+  "description": "LucidLink skills for agents. filespace-dashboard: a shareable dashboard for a filespace built from its audit trail and directory tree, placed inside the filespace so the whole team sees it.",
+  "version": "0.1.0",
+  "author": {
+    "name": "LucidLink",
+    "url": "https://www.lucidlink.com"
+  },
+  "homepage": "https://github.com/LucidLink/lucidlink-skills",
+  "repository": "https://github.com/LucidLink/lucidlink-skills",
+  "license": "SEE LICENSE IN LICENSE",
+  "keywords": [
+    "lucidlink",
+    "skills",
+    "filespace",
+    "dashboard",
+    "audit-trail",
+    "mcp"
+  ]
+}

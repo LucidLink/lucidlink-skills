@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Filespace Dashboard — LucidLink</title>
+  <style>
+    /* ─── LucidLink dashboard design tokens ───────────────────────── */
+    :root {
+      --ll-bg:              #F0EFE9;
+      --ll-surface:         #ffffff;
+      --ll-surface-subtle:  #F0EFE9;
+      --ll-border:          #D8D0C0;
+      --ll-border-strong:   #C4B9A1;
+      --ll-text:            #191610;
+      --ll-text-muted:      #64583F;
+      --ll-text-subtle:     #917E5A;
+      --ll-accent:          #5E53E0;
+      --ll-accent-hover:    #4A40C8;
+      --ll-accent-subtle:   #E3E0FF;
+      --ll-accent-text:     #ffffff;
+      --ll-success:         #16a34a;
+      --ll-success-subtle:  #dcfce7;
+      --ll-warning:         #b45309;
+      --ll-warning-subtle:  #fef3c7;
+      --ll-danger:          #dc2626;
+      --ll-danger-subtle:   #fee2e2;
+      --ll-neutral-subtle:  #F0EFE9;
+      --ll-font:            'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; /* Inter when installed locally; no web font fetch */
+      --ll-font-mono:       ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+      --ll-text-xs:   11px;  --ll-text-sm:   13px;  --ll-text-base: 15px;
+      --ll-text-lg:   17px;  --ll-text-xl:   20px;  --ll-text-2xl:  24px;  --ll-text-3xl: 30px;
+      --ll-space-1:  4px;   --ll-space-2:  8px;   --ll-space-3:  12px;
+      --ll-space-4:  16px;  --ll-space-5:  20px;  --ll-space-6:  24px;
+      --ll-space-8:  32px;  --ll-space-10: 40px;  --ll-space-12: 48px;
+      --ll-radius-sm:   6px;   --ll-radius-md:  10px;
+      --ll-radius-lg:   14px;  --ll-radius-full: 9999px;
+      --ll-transition: 150ms ease;
+
+      /* chart series: fixed order, validated on the white card surface */
+      --viz-writes:  #5E53E0;   /* slot 1, indigo */
+      --viz-reads:   #1baf7a;   /* slot 2, aqua */
+      --viz-deletes: #eb6834;   /* slot 3, orange */
+      --viz-other:   #C4B9A1;   /* neutral */
+      /* one-hue sequential ramp for magnitude (age, size) */
+      --viz-seq-1: #E3E0FF; --viz-seq-2: #BDB7F5; --viz-seq-3: #9A92EE;
+      --viz-seq-4: #7B71E7; --viz-seq-5: #5E53E0; --viz-seq-6: #4030A8;
+      --viz-grid: #EDE9E0;
+    }
+
+
+    .ll-header {
+      display: flex; align-items: center; gap: var(--ll-space-3);
+      padding: 0 var(--ll-space-6); height: 56px;
+      background: var(--ll-surface); border-bottom: 1px solid var(--ll-border); flex-shrink: 0;
+    }
+    .ll-app-icon { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ll-header-name { font-family: var(--ll-font); font-size: var(--ll-text-base); font-weight: 600; color: var(--ll-text); flex: 1; }
+    .ll-header-actions { display: flex; align-items: center; gap: var(--ll-space-2); }
+
+    .ll-card { background: var(--ll-surface); border: 1px solid var(--ll-border); border-radius: var(--ll-radius-lg); padding: var(--ll-space-6); font-family: var(--ll-font); }
+    .ll-card-title { font-size: var(--ll-text-base); font-weight: 600; color: var(--ll-text); margin-bottom: var(--ll-space-1); }
+    .ll-card-subtitle { font-size: var(--ll-text-sm); color: var(--ll-text-muted); margin-bottom: var(--ll-space-4); line-height: 1.5; }
+    .ll-stat-card { background: var(--ll-surface); border: 1px solid var(--ll-border); border-radius: var(--ll-radius-lg); padding: var(--ll-space-5) var(--ll-space-6); font-family: var(--ll-font); }
+    .ll-stat-label { font-size: var(--ll-text-sm); font-weight: 500; color: var(--ll-text-muted); margin-bottom: var(--ll-space-2); }
+    .ll-stat-value { font-size: var(--ll-text-2xl); font-weight: 700; color: var(--ll-text); line-height: 1; margin-bottom: var(--ll-space-1); }
+    .ll-stat-note { font-size: var(--ll-text-xs); color: var(--ll-text-subtle); }
+    .ll-btn { font-family: var(--ll-font); font-size: var(--ll-text-sm); font-weight: 600; border: none; border-radius: var(--ll-radius-sm); padding: 7px var(--ll-space-4); cursor: pointer; transition: background var(--ll-transition), opacity var(--ll-transition), transform var(--ll-transition); display: inline-flex; align-items: center; gap: var(--ll-space-2); white-space: nowrap; line-height: 1; }
+    .ll-btn:active { transform: scale(0.98); }
+    .ll-btn-secondary { background: var(--ll-surface); color: var(--ll-text); border: 1px solid var(--ll-border-strong); }
+    .ll-btn-secondary:hover { border-color: var(--ll-accent); color: var(--ll-accent); }
+    .ll-btn-ghost { background: transparent; color: var(--ll-text-muted); }
+    .ll-btn-ghost:hover { background: var(--ll-surface-subtle); color: var(--ll-text); }
+    .ll-status { font-family: var(--ll-font); font-size: var(--ll-text-xs); font-weight: 600; padding: 3px 8px; border-radius: var(--ll-radius-full); display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+    .ll-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    .ll-status-success { background: var(--ll-success-subtle); color: var(--ll-success); }
+    .ll-status-warning { background: var(--ll-warning-subtle); color: var(--ll-warning); }
+    .ll-status-danger  { background: var(--ll-danger-subtle);  color: var(--ll-danger); }
+    .ll-status-neutral { background: var(--ll-neutral-subtle); color: var(--ll-text-muted); }
+    .ll-table { width: 100%; border-collapse: collapse; font-family: var(--ll-font); font-size: var(--ll-text-sm); }
+    .ll-table th { font-size: var(--ll-text-xs); font-weight: 600; color: var(--ll-text-muted); text-align: left; padding: var(--ll-space-2) var(--ll-space-3); border-bottom: 1px solid var(--ll-border); white-space: nowrap; }
+    .ll-table td { padding: var(--ll-space-3); color: var(--ll-text); border-bottom: 1px solid var(--ll-border); vertical-align: middle; }
+    .ll-table tr:last-child td { border-bottom: none; }
+    .ll-table tr:hover td { background: var(--ll-surface-subtle); }
+    .ll-table td.num, .ll-table th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .ll-table td .muted { white-space: nowrap; }
+    .ll-section-heading { font-family: var(--ll-font); font-size: var(--ll-text-xs); font-weight: 600; color: var(--ll-text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--ll-space-3); }
+    .ll-code { font-family: var(--ll-font-mono); font-size: var(--ll-text-sm); background: var(--ll-surface-subtle); border: 1px solid var(--ll-border); border-radius: var(--ll-radius-sm); padding: var(--ll-space-3) var(--ll-space-4); color: var(--ll-text); overflow-x: auto; line-height: 1.6; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--ll-font); background: var(--ll-bg); color: var(--ll-text); min-height: 100vh; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased; }
+    main { flex: 1; padding: var(--ll-space-8) var(--ll-space-6); max-width: 1180px; margin: 0 auto; width: 100%; }
+
+    /* dashboard layout */
+    .meta { display: flex; flex-wrap: wrap; gap: var(--ll-space-2) var(--ll-space-4); align-items: center; font-size: var(--ll-text-sm); color: var(--ll-text-muted); margin-bottom: var(--ll-space-6); }
+    .meta .mono { font-family: var(--ll-font-mono); font-size: var(--ll-text-xs); color: var(--ll-text); }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--ll-space-4); margin-bottom: var(--ll-space-6); }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--ll-space-4); }
+    .span-12 { grid-column: span 12; } .span-8 { grid-column: span 8; } .span-7 { grid-column: span 7; } .span-6 { grid-column: span 6; } .span-5 { grid-column: span 5; } .span-4 { grid-column: span 4; }
+    @media (max-width: 900px) { .span-8, .span-7, .span-6, .span-5, .span-4 { grid-column: span 12; } }
+    .card-head { display: flex; align-items: flex-start; gap: var(--ll-space-3); margin-bottom: var(--ll-space-1); }
+    .card-head .ll-card-title { margin-bottom: 0; flex: 1; }
+    .persona { font-size: var(--ll-text-xs); font-weight: 600; color: var(--ll-accent); background: var(--ll-accent-subtle); padding: 3px 8px; border-radius: var(--ll-radius-full); white-space: nowrap; }
+    .try { margin-top: var(--ll-space-4); padding-top: var(--ll-space-3); border-top: 1px dashed var(--ll-border); font-size: var(--ll-text-xs); color: var(--ll-text-subtle); line-height: 1.5; }
+    .try strong { color: var(--ll-text-muted); font-weight: 600; }
+    .empty { font-size: var(--ll-text-sm); color: var(--ll-text-muted); background: var(--ll-surface-subtle); border: 1px dashed var(--ll-border); border-radius: var(--ll-radius-md); padding: var(--ll-space-4); line-height: 1.5; }
+    .scroll { overflow-x: auto; }
+    .path { font-family: var(--ll-font-mono); font-size: var(--ll-text-xs); color: var(--ll-text); word-break: break-all; }
+    .muted { color: var(--ll-text-muted); }
+    .subtle { color: var(--ll-text-subtle); }
+    .chips { display: flex; flex-wrap: wrap; gap: var(--ll-space-1); }
+    .chip { font-size: var(--ll-text-xs); background: var(--ll-neutral-subtle); color: var(--ll-text-muted); padding: 2px 8px; border-radius: var(--ll-radius-full); white-space: nowrap; }
+    .chip.service { background: var(--ll-accent-subtle); color: var(--ll-accent); }
+
+    /* charts */
+    .viz { position: relative; width: 100%; }
+    .viz svg { display: block; width: 100%; height: auto; overflow: visible; }
+    .viz text { font-family: var(--ll-font); font-size: 11px; fill: var(--ll-text-muted); }
+    .viz .grid line { stroke: var(--viz-grid); stroke-width: 1; }
+    .viz .axis line { stroke: var(--ll-border); stroke-width: 1; }
+    .viz .val { fill: var(--ll-text); font-weight: 600; }
+    .legend { display: flex; flex-wrap: wrap; gap: var(--ll-space-4); font-size: var(--ll-text-xs); color: var(--ll-text-muted); margin-bottom: var(--ll-space-3); }
+    .legend span::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; background: var(--c); }
+    .tip { position: absolute; pointer-events: none; background: var(--ll-text); color: #fff; font-size: var(--ll-text-xs); line-height: 1.5; padding: 6px 10px; border-radius: var(--ll-radius-sm); white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); opacity: 0; transition: opacity var(--ll-transition); z-index: 5; }
+    .tip.show { opacity: 1; }
+    .hbars { display: grid; grid-template-columns: minmax(90px, max-content) 1fr minmax(70px, max-content); gap: var(--ll-space-2) var(--ll-space-3); align-items: center; font-size: var(--ll-text-sm); }
+    .hbars .lbl { color: var(--ll-text); white-space: nowrap; }
+    .hbars .bar { height: 14px; background: var(--ll-surface-subtle); border-radius: 4px; overflow: hidden; position: relative; }
+    .hbars .bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--c, var(--ll-accent)); min-width: 2px; }
+    .hbars .bar i + i { left: auto; }
+    .hbars .v { text-align: right; font-variant-numeric: tabular-nums; color: var(--ll-text); }
+    .hbars .v small { display: block; color: var(--ll-text-subtle); font-size: var(--ll-text-xs); }
+    .hours { display: grid; grid-template-columns: repeat(24, 1fr); gap: 2px; margin-top: var(--ll-space-3); }
+    .hours i { display: block; height: 22px; border-radius: 3px; background: var(--viz-seq-1); }
+    .hours-axis { display: grid; grid-template-columns: repeat(24, 1fr); font-size: 10px; color: var(--ll-text-subtle); margin-top: 4px; }
+    .hours-axis span:nth-child(6n+1) { visibility: visible; } .hours-axis span { visibility: hidden; }
+    .ticker li { display: grid; grid-template-columns: 62px 1fr; gap: var(--ll-space-3); padding: var(--ll-space-2) 0; border-bottom: 1px solid var(--ll-border); font-size: var(--ll-text-sm); align-items: baseline; }
+    .ticker li:last-child { border-bottom: none; }
+    .ticker time { font-family: var(--ll-font-mono); font-size: var(--ll-text-xs); color: var(--ll-text-subtle); }
+    .ticker .act { font-weight: 600; font-size: var(--ll-text-xs); margin-right: 6px; }
+    .act.w { color: var(--viz-writes); } .act.d { color: var(--viz-deletes); } .act.m { color: var(--ll-text-muted); }
+    .flags { display: flex; flex-direction: column; gap: var(--ll-space-2); }
+    .flag { display: flex; gap: var(--ll-space-3); align-items: flex-start; font-size: var(--ll-text-sm); line-height: 1.5; }
+    .flag .ll-status { margin-top: 2px; flex-shrink: 0; }
+    .notes li { font-size: var(--ll-text-sm); color: var(--ll-text-muted); line-height: 1.5; margin-left: 1.2em; margin-bottom: var(--ll-space-1); }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <!-- App header -->
+  <header class="ll-header">
+    <div class="ll-app-icon" aria-hidden="true">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1.5" y="1.5" width="23" height="23" rx="6" stroke="#5E53E0" stroke-width="2"/>
+        <rect x="6" y="14" width="3" height="6" rx="1" fill="#5E53E0"/>
+        <rect x="11.5" y="9" width="3" height="11" rx="1" fill="#5E53E0"/>
+        <rect x="17" y="6" width="3" height="14" rx="1" fill="#1baf7a"/>
+      </svg>
+    </div>
+    <span class="ll-header-name" id="app-name">Filespace Dashboard</span>
+    <div class="ll-header-actions">
+      <button class="ll-btn ll-btn-ghost" id="toggle-tables" type="button" aria-pressed="false">Show tables</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="empty" id="nojs">This dashboard draws its tiles with JavaScript. If you are seeing this line, the viewer did not run scripts: macOS Quick Look, some email and chat previews, and browsers with scripts disabled all behave that way. Open <code>index.html</code> in Chrome, Safari, Edge or Firefox from the mounted drive.</div>
+    <div class="meta" id="meta"></div>
+    <section class="stats" id="stats" aria-label="Filespace totals"></section>
+    <section class="grid" id="tiles"></section>
+  </main>
+
+  <!-- render.py replaces the contents of this block with the snapshot -->
+  <script id="ll-snapshot" type="application/json">{}</script>
+
+  <script>
+  (function () {
+    'use strict';
+    var raw = document.getElementById('ll-snapshot').textContent;
+    var S;
+    try { S = JSON.parse(raw); } catch (e) { S = {}; }
+    var main = document.querySelector('main');
+    var nojs = document.getElementById('nojs'); if (nojs) nojs.remove();
+    if (!S || !S.schema) {
+      main.innerHTML = '<div class="empty">No snapshot embedded. Run <code>scripts/render.py --snapshot out/snapshot.json</code> and open the resulting index.html.</div>';
+      return;
+    }
+
+    /* ---------- helpers */
+    function el(tag, attrs, children) {
+      var n = document.createElement(tag);
+      if (attrs) Object.keys(attrs).forEach(function (k) {
+        if (k === 'class') n.className = attrs[k];
+        else if (k === 'text') n.textContent = attrs[k];
+        else if (k === 'html') n.innerHTML = attrs[k];
+        else n.setAttribute(k, attrs[k]);
+      });
+      (children || []).forEach(function (c) { if (c) n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
+      return n;
+    }
+    function fmtBytes(b) {
+      if (b === null || b === undefined) return 'n/a';
+      var u = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'], i = 0, v = b;  // binary units, labelled as such
+      while (v >= 1024 && i < u.length - 1) { v /= 1024; i++; }
+      return (i === 0 ? v : v.toFixed(v >= 100 ? 0 : 1)) + ' ' + u[i];
+    }
+    function fmtInt(n) { return (n === null || n === undefined) ? 'n/a' : Number(n).toLocaleString('en-US'); }
+    function fmtWhen(iso) {
+      if (!iso) return 'never in window';
+      var d = new Date(iso), diff = (Date.now() - d.getTime()) / 1000;
+      if (diff < 3600) return Math.max(1, Math.round(diff / 60)) + ' min ago';
+      if (diff < 86400) return Math.round(diff / 3600) + ' h ago';
+      if (diff < 86400 * 14) return Math.round(diff / 86400) + ' d ago';
+      return d.toISOString().slice(0, 10);
+    }
+    function shortDay(iso) { var d = new Date(iso + 'T00:00:00Z'); return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getUTCDay()] + ' ' + d.getUTCDate(); }
+    function tail(path, n) { n = n || 60; return path.length > n ? '…' + path.slice(-n + 1) : path; }
+    function card(opts) {
+      var head = el('div', { class: 'card-head' }, [
+        el('div', { class: 'll-card-title', text: opts.title }),
+        opts.persona ? el('span', { class: 'persona', text: opts.persona }) : null
+      ]);
+      var c = el('div', { class: 'll-card ' + (opts.span || 'span-6') }, [
+        head,
+        opts.subtitle ? el('div', { class: 'll-card-subtitle', text: opts.subtitle }) : null
+      ]);
+      (opts.body || []).forEach(function (b) { if (b) c.appendChild(b); });
+      if (opts.tryNext) c.appendChild(el('div', { class: 'try', html: '<strong>Try next:</strong> ' + opts.tryNext }));
+      return c;
+    }
+    function table(cols, rows, cls) {
+      var t = el('table', { class: 'll-table ' + (cls || '') });
+      var thead = el('thead'), tr = el('tr');
+      cols.forEach(function (c) { tr.appendChild(el('th', { class: c.num ? 'num' : '', text: c.label })); });
+      thead.appendChild(tr); t.appendChild(thead);
+      var tb = el('tbody');
+      rows.forEach(function (r) {
+        var row = el('tr');
+        cols.forEach(function (c) {
+          var v = c.render ? c.render(r) : r[c.key];
+          var td = el('td', { class: c.num ? 'num' : '' });
+          if (v instanceof Node) td.appendChild(v); else td.textContent = v;
+          row.appendChild(td);
+        });
+        tb.appendChild(row);
+      });
+      t.appendChild(tb);
+      return el('div', { class: 'scroll' }, [t]);
+    }
+    var tip = el('div', { class: 'tip', role: 'status' });
+    document.body.appendChild(tip);
+    function showTip(x, y, html) { tip.innerHTML = html; tip.style.left = x + 'px'; tip.style.top = y + 'px'; tip.classList.add('show'); }
+    function hideTip() { tip.classList.remove('show'); }
+
+    /* ---------- header + meta */
+    document.getElementById('app-name').textContent = 'Filespace Dashboard · ' + (S.title || 'filespace');
+    document.title = (S.title || 'Filespace') + ' Dashboard — LucidLink';
+    var meta = document.getElementById('meta');
+    var src = S.source || {};
+    meta.appendChild(el('span', { html: 'Snapshot <span class="mono">' + (S.generated_at || '') + '</span>' }));
+    meta.appendChild(el('span', { html: 'Window <span class="mono">' + S.window_days + ' days</span>' }));
+    meta.appendChild(el('span', { html: 'Budget <span class="mono">' + S.budget + '</span>' }));
+    meta.appendChild(el('span', { html: 'Source <span class="mono">' + (src.mode || '?') + (src.filespace ? ' · ' + src.filespace : '') + '</span>' }));
+
+    /* ---------- stat cards */
+    var st = S.stats || {}, act = S.activity || {};
+    var stats = document.getElementById('stats');
+    function stat(label, value, note) {
+      stats.appendChild(el('div', { class: 'll-stat-card' }, [
+        el('div', { class: 'll-stat-label', text: label }),
+        el('div', { class: 'll-stat-value', text: value }),
+        el('div', { class: 'll-stat-note', text: note || '' })
+      ]));
+    }
+    // Provenance per field (snapshot.py >= this version); older snapshots only carry stats_source.
+    var prov = st.provenance || {};
+    var legacyHub = !st.provenance && st.stats_source && st.stats_source !== 'tree walk';
+    function fromHub(k) { return legacyHub || /^hub/.test(prov[k] || ''); }
+    var walkNote = st.walk_complete === false ? ', sample: the walk hit its budget' : '';
+    stat('Files', fmtInt(st.files), fmtInt(st.dirs) + ' folders' + (fromHub('files') ? '' : ' · tree walk' + walkNote));
+    stat('Logical size', fmtBytes(st.data_bytes), fromHub('data_bytes') ? 'what the files add up to · hub figure' : 'what the walked files add up to · tree walk' + walkNote);
+    // Only compare two hub figures: a walked (possibly sampled) logical size against the hub's stored size gives a meaningless ratio.
+    // Connect-linked bytes sit in the logical size but are never stored here; take them out of the base
+    // before calling the difference "dedup and compression".
+    var storedBase = (st.data_bytes || 0) - (fromHub('external_bytes') ? (st.external_bytes || 0) : 0);
+    var ratio = (st.storage_bytes && storedBase > 0 && fromHub('storage_bytes') && fromHub('data_bytes')) ? (st.storage_bytes / storedBase) : null;
+    var storedNote = !st.storage_bytes ? 'needs MCP or SDK stats'
+      : ratio ? (ratio < 1 ? Math.round((1 - ratio) * 100) + '% saved by dedup and compression' : Math.round((ratio - 1) * 100) + '% overhead on stored bytes')
+      : 'hub figure · no ratio against a walked logical size';
+    stat('Stored size', fmtBytes(st.storage_bytes), storedNote);
+    stat('Connect files', st.external_files === null || st.external_files === undefined ? 'n/a' : fmtInt(st.external_files), st.external_bytes ? fmtBytes(st.external_bytes) + ' linked, not copied' : 'external files linked in');
+    var humans = (act.by_actor || []).filter(function (a) { return a.kind === 'human'; }).length;
+    var services = (act.by_actor || []).filter(function (a) { return a.kind === 'service'; }).length;
+    stat('Actors', fmtInt(humans + services), humans + ' human · ' + services + ' service account' + (services === 1 ? '' : 's'));
+    stat('Audit events', fmtInt(act.events), 'last ' + S.window_days + ' days');
+
+    /* ---------- tiles */
+    var tiles = document.getElementById('tiles');
+    var tableViews = [];
+
+    /* 1. Filespace Pulse: stacked bars by day */
+    (function pulse() {
+      var days = act.by_day || [];
+      var series = [
+        { key: 'reads', label: 'Reads', c: 'var(--viz-reads)' },
+        { key: 'writes', label: 'Writes', c: 'var(--viz-writes)' },
+        { key: 'deletes', label: 'Deletes', c: 'var(--viz-deletes)' }
+      ];
+      var body = [];
+      if (!days.length || !act.events) {
+        body.push(el('div', { class: 'empty', text: 'No audit events in the window. Enable the audit trail on this filespace and the pulse appears on the next snapshot.' }));
+      } else {
+        var legend = el('div', { class: 'legend' });
+        series.forEach(function (s) { legend.appendChild(el('span', { style: '--c:' + s.c, text: s.label })); });
+        body.push(legend);
+        var W = 640, H = 220, padL = 44, padR = 8, padT = 14, padB = 28;
+        var innerW = W - padL - padR, innerH = H - padT - padB;
+        var max = Math.max.apply(null, days.map(function (d) { return d.reads + d.writes + d.deletes; }).concat([1]));
+        var svgNS = 'http://www.w3.org/2000/svg';
+        var svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+        svg.setAttribute('role', 'img');
+        svg.setAttribute('aria-label', 'Audit events per day, stacked reads, writes and deletes');
+        var grid = document.createElementNS(svgNS, 'g'); grid.setAttribute('class', 'grid');
+        var ticks = 4;
+        for (var i = 0; i <= ticks; i++) {
+          var y = padT + innerH - (innerH * i / ticks);
+          var ln = document.createElementNS(svgNS, 'line');
+          ln.setAttribute('x1', padL); ln.setAttribute('x2', W - padR); ln.setAttribute('y1', y); ln.setAttribute('y2', y);
+          grid.appendChild(ln);
+          var tx = document.createElementNS(svgNS, 'text');
+          tx.setAttribute('x', padL - 8); tx.setAttribute('y', y + 4); tx.setAttribute('text-anchor', 'end');
+          tx.textContent = fmtInt(Math.round(max * i / ticks));
+          grid.appendChild(tx);
+        }
+        svg.appendChild(grid);
+        var slot = innerW / days.length, bw = Math.min(46, slot * 0.6);
+        var maxIdx = days.reduce(function (m, d, i, a) { return (d.reads + d.writes + d.deletes) > (a[m].reads + a[m].writes + a[m].deletes) ? i : m; }, 0);
+        days.forEach(function (d, i) {
+          var x = padL + slot * i + (slot - bw) / 2, yTop = padT + innerH, total = d.reads + d.writes + d.deletes;
+          var g = document.createElementNS(svgNS, 'g');
+          series.forEach(function (s, si) {
+            var h = innerH * (d[s.key] / max);
+            if (h <= 0) return;
+            var r = document.createElementNS(svgNS, 'rect');
+            var gap = (si > 0 && h > 2) ? 2 : 0;
+            r.setAttribute('x', x); r.setAttribute('width', bw);
+            r.setAttribute('y', yTop - h + gap); r.setAttribute('height', Math.max(0, h - gap));
+            r.setAttribute('fill', s.c);
+            if (si === 2 || (si === 1 && !d.deletes) || (si === 0 && !d.writes && !d.deletes)) { r.setAttribute('rx', 4); r.setAttribute('ry', 4); }
+            g.appendChild(r);
+            yTop -= h;
+          });
+          if (i === maxIdx && total) {
+            var v = document.createElementNS(svgNS, 'text');
+            v.setAttribute('x', x + bw / 2); v.setAttribute('y', yTop - 5); v.setAttribute('text-anchor', 'middle'); v.setAttribute('class', 'val');
+            v.textContent = fmtInt(total);
+            g.appendChild(v);
+          }
+          var lbl = document.createElementNS(svgNS, 'text');
+          lbl.setAttribute('x', x + bw / 2); lbl.setAttribute('y', H - 8); lbl.setAttribute('text-anchor', 'middle');
+          lbl.textContent = shortDay(d.day);
+          g.appendChild(lbl);
+          var hit = document.createElementNS(svgNS, 'rect');
+          hit.setAttribute('x', padL + slot * i); hit.setAttribute('width', slot); hit.setAttribute('y', padT); hit.setAttribute('height', innerH);
+          hit.setAttribute('fill', 'transparent');
+          hit.addEventListener('mousemove', function (ev) {
+            var rect = svg.getBoundingClientRect();
+            var px = rect.left + (x + bw / 2) / W * rect.width + window.scrollX;
+            var py = rect.top + (padT + innerH - innerH * total / max) / H * rect.height + window.scrollY;
+            showTip(px, py, '<strong>' + d.day + '</strong><br>' + fmtInt(d.reads) + ' reads · ' + fmtInt(d.writes) + ' writes · ' + fmtInt(d.deletes) + ' deletes');
+          });
+          hit.addEventListener('mouseleave', hideTip);
+          g.appendChild(hit);
+          svg.appendChild(g);
+        });
+        var axis = document.createElementNS(svgNS, 'line');
+        axis.setAttribute('class', 'axis'); axis.setAttribute('x1', padL); axis.setAttribute('x2', W - padR); axis.setAttribute('y1', padT + innerH); axis.setAttribute('y2', padT + innerH);
+        axis.setAttribute('stroke', '#D8D0C0');
+        svg.appendChild(axis);
+        body.push(el('div', { class: 'viz' }, [svg]));
+        var tv = table([
+          { label: 'Day', key: 'day' },
+          { label: 'Reads', key: 'reads', num: true, render: function (r) { return fmtInt(r.reads); } },
+          { label: 'Writes', key: 'writes', num: true, render: function (r) { return fmtInt(r.writes); } },
+          { label: 'Deletes', key: 'deletes', num: true, render: function (r) { return fmtInt(r.deletes); } }
+        ], days);
+        tv.hidden = true; tableViews.push(tv); body.push(tv);
+        if (act.by_hour && act.by_hour.some(function (n) { return n > 0; })) {
+          var hmax = Math.max.apply(null, act.by_hour);
+          var hours = el('div', { class: 'hours', role: 'img', 'aria-label': 'Events by hour of day, UTC' });
+          act.by_hour.forEach(function (n, h) {
+            var step = n === 0 ? 1 : 1 + Math.min(5, Math.ceil(5 * n / hmax));
+            var cell = el('i', { style: 'background: var(--viz-seq-' + step + ')', title: String(h).padStart(2, '0') + ':00 UTC · ' + fmtInt(n) + ' events' });
+            hours.appendChild(cell);
+          });
+          var hax = el('div', { class: 'hours-axis' });
+          for (var h = 0; h < 24; h++) hax.appendChild(el('span', { text: String(h).padStart(2, '0') }));
+          body.push(el('div', { class: 'll-stat-label', style: 'margin-top: var(--ll-space-4)', text: 'By hour of day (UTC)' }));
+          body.push(hours); body.push(hax);
+        }
+      }
+      tiles.appendChild(card({
+        span: 'span-7', title: 'Filespace pulse', persona: 'Production lead',
+        subtitle: 'Every read, write and delete the filespace recorded, by day. A mounted drive cannot show reads; the audit trail can.',
+        body: body,
+        tryNext: 'split the pulse per project folder, or overlay render-farm hours to see when agents work and when people do.'
+      }));
+    })();
+
+    /* 2. Actors: humans vs service accounts */
+    (function actors() {
+      var list = act.by_actor || [];
+      var body = [];
+      if (!list.length) {
+        body.push(el('div', { class: 'empty', text: 'No actors in the window.' }));
+      } else {
+        var max = Math.max.apply(null, list.map(function (a) { return a.events; }));
+        var bars = el('div', { class: 'hbars' });
+        list.slice(0, 10).forEach(function (a) {
+          var name = a.label || a.name;
+          bars.appendChild(el('div', { class: 'lbl' }, [
+            el('span', { class: 'chip ' + (a.kind === 'service' ? 'service' : ''), text: a.kind === 'service' ? 'agent' : 'human' }), ' ',
+            el('span', { text: name.length > 26 ? name.slice(0, 25) + '…' : name, title: name })
+          ]));
+          var bar = el('div', { class: 'bar', title: fmtInt(a.reads) + ' reads · ' + fmtInt(a.writes) + ' writes · ' + fmtInt(a.deletes) + ' deletes' });
+          var total = a.events || 1;
+          var segs = [['reads', 'var(--viz-reads)'], ['writes', 'var(--viz-writes)'], ['deletes', 'var(--viz-deletes)']];
+          var left = 0;
+          segs.forEach(function (sg) {
+            var w = (a[sg[0]] / max) * 100;
+            if (w <= 0) return;
+            var seg = el('i', { style: 'left:' + left + '%; width:' + w + '%; --c:' + sg[1] + '; position:absolute' });
+            bar.appendChild(seg);
+            left += w;
+          });
+          bars.appendChild(bar);
+          bars.appendChild(el('div', { class: 'v', html: fmtInt(a.events) + '<small>last seen ' + fmtWhen(a.last_seen) + '</small>' }));
+        });
+        body.push(bars);
+        if (!list.some(function (a) { return a.kind === 'service'; })) {
+          body.push(el('div', { class: 'empty', style: 'margin-top: var(--ll-space-4)', text: 'No service accounts appear yet. Point an agent at this filespace through the MCP Server with a collaborator service account, and it shows up here as its own actor with its own audit line.' }));
+        }
+      }
+      tiles.appendChild(card({
+        span: 'span-5', title: 'Who is here, human or agent', persona: 'Developer',
+        subtitle: 'Each login and each service account is a separate actor in the audit trail. Agents are accountable by construction.',
+        body: body,
+        tryNext: 'give every agent its own scoped, expiring service account, then chart which files each one touched.'
+      }));
+    })();
+
+    /* 3. Who is working where: folders */
+    (function folders() {
+      var rows = (S.folders || []).filter(function (f) { return f.files || f.reads || f.writes || f.deletes; }).slice(0, 12);
+      var body = [];
+      if (!rows.length) body.push(el('div', { class: 'empty', text: 'No folder activity recorded.' }));
+      else body.push(table([
+        { label: 'Folder', render: function (r) { return el('span', { class: 'path', text: r.path === '/' ? '/ (root files)' : r.path }); } },
+        { label: 'Files', num: true, render: function (r) { return fmtInt(r.files); } },
+        { label: 'Size', num: true, render: function (r) { return fmtBytes(r.bytes); } },
+        { label: 'Reads', num: true, render: function (r) { return fmtInt(r.reads); } },
+        { label: 'Writes', num: true, render: function (r) { return fmtInt(r.writes + r.deletes); } },
+        { label: 'Last write', render: function (r) { return el('span', { class: 'muted', text: fmtWhen(r.last_write) }); } },
+        { label: 'Who', render: function (r) {
+            var c = el('div', { class: 'chips' });
+            (r.writers || []).forEach(function (w) { c.appendChild(el('span', { class: 'chip' + (w.indexOf('@') === -1 ? ' service' : ''), text: w.length > 22 ? w.slice(0, 21) + '…' : w, title: w })); });
+            if (!(r.writers || []).length) c.appendChild(el('span', { class: 'subtle', text: '·' }));
+            return c;
+          } }
+      ], rows));
+      tiles.appendChild(card({
+        span: 'span-12', title: 'Who is working where', persona: 'Production lead',
+        subtitle: 'Top-level folders ranked by writes in the window, with the people and agents who made them.',
+        body: body,
+        tryNext: 'set folders.depth to 2 in the config to see per-show or per-client folders, or add currently held locks from the MCP list_locks_held tool.'
+      }));
+    })();
+
+    /* 4. Cold and hot map */
+    (function cold() {
+      var c = S.cold || {}, buckets = c.buckets || [];
+      var body = [];
+      var totalB = buckets.reduce(function (s, b) { return s + b.bytes; }, 0) || 1;
+      var bars = el('div', { class: 'hbars' });
+      buckets.forEach(function (b, i) {
+        bars.appendChild(el('div', { class: 'lbl', text: b.label }));
+        var bar = el('div', { class: 'bar', title: fmtInt(b.files) + ' files' });
+        bar.appendChild(el('i', { style: 'width:' + (b.bytes / totalB * 100) + '%; --c: var(--viz-seq-' + Math.min(6, i + 1) + ')' }));
+        bars.appendChild(bar);
+        bars.appendChild(el('div', { class: 'v', html: fmtBytes(b.bytes) + '<small>' + fmtInt(b.files) + ' files</small>' }));
+      });
+      body.push(el('div', { class: 'll-stat-label', text: 'Bytes by time since last modification' }));
+      body.push(bars);
+      var cands = c.candidates || [];
+      if (cands.length) {
+        body.push(el('div', { class: 'll-stat-label', style: 'margin-top: var(--ll-space-5)', text: 'Archive candidates: ' + (c.candidate_rule || '') }));
+        body.push(table([
+          { label: 'File', render: function (r) { return el('span', { class: 'path', text: tail(r.path, 64), title: r.path }); } },
+          { label: 'Size', num: true, render: function (r) { return fmtBytes(r.bytes); } },
+          { label: 'Modified', render: function (r) { return el('span', { class: 'muted', text: (r.mtime || '').slice(0, 10) }); } }
+        ], cands.slice(0, 8)));
+      } else {
+        body.push(el('div', { class: 'empty', style: 'margin-top: var(--ll-space-4)', text: 'No archive candidates under the current rule (' + (c.candidate_rule || '') + ').' }));
+      }
+      tiles.appendChild(card({
+        span: 'span-6', title: 'Cold and hot', persona: 'Storage admin',
+        subtitle: 'Where the bytes sit on the age curve. Modification time from the tree; add audit reads to find data nobody even opens.',
+        body: body,
+        tryNext: 'ask the agent for "files over 1 GB not read in 180 days" using the audit trail, then move them to a Connect-linked archive bucket.'
+      }));
+    })();
+
+    /* 5. Storage mix by extension */
+    (function ext() {
+      var rows = (S.extensions || []).slice(0, 8);
+      var body = [];
+      if (!rows.length) body.push(el('div', { class: 'empty', text: 'No files walked.' }));
+      else {
+        var max = Math.max.apply(null, rows.map(function (r) { return r.bytes; })) || 1;
+        var bars = el('div', { class: 'hbars' });
+        rows.forEach(function (r) {
+          bars.appendChild(el('div', { class: 'lbl' }, [el('code', { style: 'font-family: var(--ll-font-mono); font-size: 12px', text: r.ext })]));
+          var bar = el('div', { class: 'bar' });
+          bar.appendChild(el('i', { style: 'width:' + (r.bytes / max * 100) + '%' }));
+          bars.appendChild(bar);
+          bars.appendChild(el('div', { class: 'v', html: fmtBytes(r.bytes) + '<small>' + fmtInt(r.files) + ' files</small>' }));
+        });
+        body.push(bars);
+      }
+      var largest = (S.largest || []).slice(0, 5);
+      if (largest.length) {
+        body.push(el('div', { class: 'll-stat-label', style: 'margin-top: var(--ll-space-5)', text: 'Largest files' }));
+        body.push(table([
+          { label: 'File', render: function (r) { return el('span', { class: 'path', text: tail(r.path, 64), title: r.path }); } },
+          { label: 'Size', num: true, render: function (r) { return fmtBytes(r.bytes); } }
+        ], largest));
+      }
+      tiles.appendChild(card({
+        span: 'span-6', title: 'What the bytes are', persona: 'Storage admin',
+        subtitle: 'Size by file type. Stored size in the header is what you actually pay for after dedup and compression.',
+        body: body,
+        tryNext: 'group by codec or camera using the MCP grep_files tool on sidecar metadata, or by Connect data store.'
+      }));
+    })();
+
+    /* 6. Recent changes ticker */
+    (function recent() {
+      var rows = S.recent || [];
+      var body = [];
+      if (!rows.length) body.push(el('div', { class: 'empty', text: 'No writes, moves or deletes in the window.' }));
+      else {
+        var ul = el('ul', { class: 'ticker', style: 'list-style: none' });
+        rows.slice(0, 15).forEach(function (r) {
+          var cls = /Delete/.test(r.action) ? 'd' : /Move/.test(r.action) ? 'm' : 'w';
+          ul.appendChild(el('li', {}, [
+            el('time', { datetime: r.ts, text: (r.ts || '').slice(5, 16).replace('T', ' ') }),
+            el('div', {}, [
+              el('span', { class: 'act ' + cls, text: r.action.replace(/File|Directory/g, function (m) { return m === 'File' ? '' : 'Dir '; }) }),
+              el('span', { class: 'path', text: tail(r.path, 70), title: r.path }),
+              el('div', { class: 'subtle', style: 'font-size: var(--ll-text-xs)', text: r.user })
+            ])
+          ]));
+        });
+        body.push(ul);
+      }
+      tiles.appendChild(card({
+        span: 'span-7', title: 'What just changed', persona: 'Production lead',
+        subtitle: 'The newest writes, moves and deletes, with who did them. One save can fan out into several audit rows; these are collapsed per second.',
+        body: body,
+        tryNext: 'make this live: subscribe_changes on a folder through the MCP Server and poll it, or wire the upcoming event stream when it ships.'
+      }));
+    })();
+
+    /* 7. Flags and notes */
+    (function flags() {
+      var fl = S.flags || [], notes = S.notes || [];
+      var body = [];
+      if (fl.length) {
+        var wrap = el('div', { class: 'flags' });
+        fl.forEach(function (f) {
+          var lvl = { warning: 'warning', danger: 'danger', success: 'success' }[f.level] || 'neutral';
+          wrap.appendChild(el('div', { class: 'flag' }, [
+            el('span', { class: 'll-status ll-status-' + lvl, text: lvl === 'neutral' ? 'note' : lvl }),
+            el('span', { text: f.text })
+          ]));
+        });
+        body.push(wrap);
+      } else body.push(el('div', { class: 'empty', text: 'Nothing flagged in this window.' }));
+      if (notes.length) {
+        body.push(el('div', { class: 'll-stat-label', style: 'margin-top: var(--ll-space-5)', text: 'About this snapshot' }));
+        var ul = el('ul', { class: 'notes' });
+        notes.forEach(function (n) { ul.appendChild(el('li', { text: n })); });
+        body.push(ul);
+      }
+      tiles.appendChild(card({
+        span: 'span-5', title: 'Flags', persona: 'Storage admin',
+        subtitle: 'Patterns worth a second look: mass deletes, silent agents, single-actor windows. Heuristics, not alerts.',
+        body: body,
+        tryNext: 'turn a flag into a scheduled check: run snapshot.py from cron and have the agent read only the flags section.'
+      }));
+    })();
+
+    /* table toggle for the chart */
+    var btn = document.getElementById('toggle-tables');
+    btn.addEventListener('click', function () {
+      var on = btn.getAttribute('aria-pressed') !== 'true';
+      btn.setAttribute('aria-pressed', String(on));
+      btn.textContent = on ? 'Hide tables' : 'Show tables';
+      tableViews.forEach(function (t) { t.hidden = !on; });
+    });
+  })();
+  </script>
+</body>
+</html>

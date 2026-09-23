@@ -1,0 +1,50 @@
+# filespace-dashboard configuration
+# Copy to config.yaml (git-ignored) and edit. Every key is optional except the source.
+
+title: northwind-post                   # shown in the dashboard header
+
+filespace:
+  name: northwind-post.studio            # <filespace>.<workspace>; used by the sdk source and shown in the page
+  source: mount                          # mount | sdk   (mcp mode is driven by the agent, no script)
+  root: /Volumes/studio/northwind-post       # mount source: where the filespace is mounted
+  sdk:
+    token_env: LUCIDLINK_TOKEN           # sdk source: the NAME of the env var that holds the token; export it in
+                                         # your shell before running, never write the token into this file
+
+# How many tokens or seconds to spend. Also selectable at run time with --budget.
+#   lite      ~5 MCP calls or a 30 s walk of 3,000 entries; 7-day window; no hourly profile, no flags
+#   standard  ~20 to 40 MCP calls or a 2 min walk of 40,000 entries; 7-day window; hourly profile and flags
+#   deep      100+ MCP calls or a 15 min walk of 400,000 entries; 30-day window; everything
+# Default: deep for the mount and sdk sources (bounds time only); the agent uses standard on the mcp source.
+budget: deep
+window_days: 7                           # overrides the budget's default audit window
+
+# How often to regenerate. This is documentation for the agent and for you; nothing reads it yet.
+#   manual  the agent regenerates when you ask (spends tokens each time)
+#   script  you schedule scripts/snapshot.py and scripts/render.py (spends no tokens)
+refresh: manual
+
+folders:
+  depth: 1                               # group activity by the first N path segments
+  exclude: []                            # extra names to skip during the walk; the audit dir and a few system names
+                                         # (.DS_Store, .git, node_modules, ...) are always skipped. Audit events on
+                                         # excluded paths still count in the pulse and per actor, not per folder.
+
+actors:
+  # Regexes that mark an audit user as a service account (agent or automation) rather than a human.
+  # Default: any user name without an @ sign.
+  service_patterns: ["^(?!.*@)"]
+  labels: {}                             # optional friendly names, e.g. "sa-render-01": "Render farm"
+
+cold:
+  candidate_min_bytes: 10485760          # 10 MB
+  candidate_min_age_days: 180
+
+output:
+  dir: ./out                             # where snapshot.json and index.html land locally; relative to the current
+                                         # directory, so prefer an absolute path
+  publish_to: /Volumes/studio/northwind-post/Dashboards/northwind-post   # optional, mount source only: where render.py --publish copies the page
+                                         # so the whole team sees it; pass the same path to render.py --publish
+  filespace_path: /Dashboards/northwind-post   # the same folder as a path inside the filespace; keeps the dashboard's own
+                                         # files out of the counts on any source (the mount source derives it from publish_to)
+  keep_history: true                     # documentation only: render.py --publish keeps history unless you pass --no-history
