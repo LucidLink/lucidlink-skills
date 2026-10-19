@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.4",
+  "id": "lucidlink-skills",
+  "name": "LucidLink Skills",
+  "version": "0.1.0",
+  "category": "skill",
+  "type": "Agent Skill",
+  "author": "LucidLink Labs",
+  "authorType": "official",
+  "status": "beta",
+  "description": "LucidLink skills for AI agents, packaged as the Claude Code plugin lucidlink and as an Agent Skills folder for Codex. First skill: filespace-dashboard, a shareable dashboard built from a filespace's audit trail and directory tree.",
+  "tags": ["skill", "claude-code", "codex", "agent-skills", "filespace", "dashboard", "audit-trail", "mcp"],
+  "license": "Proprietary",
+  "lastUpdated": "2026-09-23",
+  "formFactor": "ai-capability",
+  "maturity": "prototype",
+  "developer": { "name": "Aleksandar Nedelchev", "email": "aleksandar.nedelchev@lucidlink.com" },
+  "repository": { "url": "https://github.com/LucidLink/lucidlink-skills", "provider": "github", "scannable": true },
+  "links": [
+    { "kind": "repo", "label": "lucidlink-skills on GitHub", "url": "https://github.com/LucidLink/lucidlink-skills" },
+    { "kind": "docs", "label": "LucidLink MCP server on PyPI", "url": "https://pypi.org/project/lucidlink-mcp/" },
+    { "kind": "docs", "label": "LucidLink Python SDK on PyPI", "url": "https://pypi.org/project/lucidlink/" }
+  ],
+  "content": { "overview": "overview.md", "installation": "installation.md", "examples": "examples.md", "changelog": "changelog.md" },
+  "source": { "repo": "lucidlink-skills", "path": "." }
+}
