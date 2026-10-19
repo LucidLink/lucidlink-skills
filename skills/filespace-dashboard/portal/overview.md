@@ -1,14 +1,12 @@
-# Overview - LucidLink Skills
+# Overview - Filespace Dashboard
 
-LucidLink Skills gives a coding agent a job to do in a LucidLink filespace.
-Each skill is a packaged procedure the agent follows when you ask for that
-job. The repository is one Claude Code plugin, `lucidlink`, and the same
-folder is a plain Agent Skills package for Codex and other harnesses that read
-`SKILL.md`. It has been tested with Claude Code and Codex.
-
-The first skill, `filespace-dashboard`, builds a shareable dashboard for a
-filespace from its audit trail and directory tree, and places it inside the
-filespace so everyone with the drive mounted sees the same page.
+Filespace Dashboard is an agent skill that builds a shareable dashboard for a
+LucidLink filespace from its audit trail and directory tree, and places it
+inside the filespace so everyone with the drive mounted sees the same page.
+Ask your agent for a dashboard and the skill confirms the details, collects
+the data, renders the page, and tells you where it is. It ships in the
+`lucidlink` plugin for Claude Code and works as an Agent Skills folder in
+Codex; it has been tested with both.
 
 :::features
 - **Activity pulse**

@@ -1,14 +1,14 @@
 {
   "schema_version": "1.4",
-  "id": "lucidlink-skills",
-  "name": "LucidLink Skills",
+  "id": "filespace-dashboard",
+  "name": "Filespace Dashboard",
   "version": "0.1.0",
   "category": "skill",
   "type": "Agent Skill",
   "author": "LucidLink Labs",
   "authorType": "official",
   "status": "beta",
-  "description": "LucidLink skills for AI agents, packaged as the Claude Code plugin lucidlink and as an Agent Skills folder for Codex. First skill: filespace-dashboard, a shareable dashboard built from a filespace's audit trail and directory tree.",
+  "description": "An agent skill that builds a shareable dashboard for a LucidLink filespace from its audit trail and directory tree and places it inside the filespace: activity pulse, humans versus agents, who is working where, cold data, storage mix and newest changes.",
   "tags": ["skill", "claude-code", "codex", "agent-skills", "filespace", "dashboard", "audit-trail", "mcp"],
   "license": "Proprietary",
   "lastUpdated": "2026-09-23",
@@ -22,5 +22,5 @@
     { "kind": "docs", "label": "LucidLink Python SDK on PyPI", "url": "https://pypi.org/project/lucidlink/" }
   ],
   "content": { "overview": "overview.md", "installation": "installation.md", "examples": "examples.md", "changelog": "changelog.md" },
-  "source": { "repo": "lucidlink-skills", "path": "." }
+  "source": { "repo": "lucidlink-skills", "path": "skills/filespace-dashboard" }
 }
