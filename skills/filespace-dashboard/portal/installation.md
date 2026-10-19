@@ -1,4 +1,4 @@
-# Installation - LucidLink Skills
+# Installation - Filespace Dashboard
 
 ## Claude Code
 

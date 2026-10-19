@@ -1,4 +1,4 @@
-# Examples - LucidLink Skills
+# Examples - Filespace Dashboard
 
 ## Build a dashboard for a filespace
 
